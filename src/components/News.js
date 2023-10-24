@@ -6,11 +6,13 @@ import PropTypes from "prop-types";
 export class News extends Component {
   static defaultProps = {
     pageSize: 3,
-    Country: "in",
+    country: "in",
+    category: "general",
   };
   static propTypes = {
-    Country: PropTypes.string,
+    country: PropTypes.string,
     pageSize: PropTypes.number,
+    category: PropTypes.string,
   };
   constructor() {
     super();
@@ -25,11 +27,13 @@ export class News extends Component {
     };
   }
   async componentDidMount() {
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.Country}&apiKey=cbc372f3450d4d3fb4b4c35576b337a6&page=1&pageSize=${this.props.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=cbc372f3450d4d3fb4b4c35576b337a6&page=1&pageSize=${this.props.pageSize}`;
+
+    console.log(url);
 
     this.setState({ loading: true });
     let data = await fetch(url);
-    console.log("hereeeeeee:" + data);
+
     let parsedData = await data.json();
 
     console.log(parsedData);
@@ -43,7 +47,9 @@ export class News extends Component {
 
   handleNextClick = async () => {
     let url = `https://newsapi.org/v2/top-headlines?country=${
-      this.props.Country
+      this.props.country
+    }&category=${
+      this.props.category
     }&apiKey=cbc372f3450d4d3fb4b4c35576b337a6&page=${
       this.state.page + 1
     }&pageSize=${this.props.pageSize}`;
@@ -61,7 +67,6 @@ export class News extends Component {
         nextBtn: true,
         loading: false,
       });
-      console.log(this.state.nextBtn);
     } else {
       this.setState({
         articles: parsedData.articles,
@@ -69,15 +74,13 @@ export class News extends Component {
         nextBtn: false,
         loading: false,
       });
-      console.log("next :" + this.state.nextBtn);
-      console.log(`{nextBtn :${this.state.nextBtn}}`);
     }
   };
   handlePrevClick = async () => {
-    console.log("previous");
-
     let url = `https://newsapi.org/v2/top-headlines?country=${
-      this.props.Country
+      this.props.country
+    }&category=${
+      this.props.category
     }&apiKey=cbc372f3450d4d3fb4b4c35576b337a6&page=${
       this.state.page - 1
     }&pageSize=${this.props.pageSize}`;
@@ -95,7 +98,7 @@ export class News extends Component {
   render() {
     return (
       <div className="container my-3">
-        <h3 className="text-center">Top Headlines</h3>
+        <h3 className="text-center my-3">Top Headlines</h3>
         {this.state.loading && <Spinner />}
 
         <div className="row">
@@ -123,7 +126,7 @@ export class News extends Component {
               );
             })}
         </div>
-        <div className="container d-flex justify-content-between">
+        <div className="container d-flex justify-content-between my-3 ">
           <button
             disabled={this.state.page <= 1}
             type="button"
