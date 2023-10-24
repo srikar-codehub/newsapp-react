@@ -1,73 +1,106 @@
 import React, { Component } from "react";
 import NewsItem from "./NewsItem";
+import Spinner from "./Spinner";
+import PropTypes from "prop-types";
 
 export class News extends Component {
-  articles = [
-    {
-      source: { id: "google-news", name: "Google News" },
-      author: "The Washington Post",
-      title:
-        "Israel-Hamas war live news: Rishi Sunak in Israel; Gaza hospital strike fuels war escalation fears - The Washington Post",
-      description: null,
-      url: "https://news.google.com/rss/articles/CBMiS2h0dHBzOi8vd3d3Lndhc2hpbmd0b25wb3N0LmNvbS93b3JsZC8yMDIzLzEwLzE5L2lzcmFlbC1uZXdzLWhhbWFzLXdhci1nYXphL9IBAA?oc=5",
-      urlToImage: null,
-      publishedAt: "2023-10-19T11:03:45+00:00",
-      content: null,
-    },
-    {
-      source: { id: "associated-press", name: "Associated Press" },
-      author: "LISA MASCARO, FARNOUSH AMIRI and STEPHEN GROVES",
-      title:
-        "The House speaker's race hits an impasse as defeated GOP Rep. Jim Jordan wants to try again",
-      description:
-        "WASHINGTON (AP) — Refusing to drop out, Republican Rep. Jim Jordan has brought the House speaker's race to a stalemate — the hard-fighting ally of Donald Trump has been unable to win the gavel but he and his far-right allies won't step aside for a more viable…",
-      url: "https://apnews.com/abdef873a8d14979848b658e4ef46fd2",
-      urlToImage:
-        "https://storage.googleapis.com/afs-prod/media/f4744a35ee6d43b9a418e1c6c91f2d5c/1920.jpeg",
-      publishedAt: "2023-10-19T04:07:42Z",
-      content:
-        "WASHINGTON (AP) — Refusing to drop out, Republican Rep. Jim Jordan has brought the House speaker's race to a stalemate — the hard-fighting ally of Donald Trump has been unable to win the gavel but he… [+6198 chars]",
-    },
-    {
-      source: { id: "associated-press", name: "Associated Press" },
-      author: "BRIAN SLODYSKO",
-      title:
-        "Trump’s campaign cash overwhelms his GOP rivals. Here are key third-quarter fundraising takeaways",
-      description:
-        "WASHINGTON (AP) — Donald Trump is crushing his Republican presidential rivals in the contest to raise campaign cash, putting the other White House hopefuls in an unenviable position before the first votes are cast in January.",
-      url: "https://apnews.com/a07e78b814376d635f53ea17aa704d1d",
-      urlToImage:
-        "https://storage.googleapis.com/afs-prod/media/8397d8343dcd4e38b99d34c86f1dcbf4/3000.jpeg",
-      publishedAt: "2023-10-19T04:05:59Z",
-      content:
-        "WASHINGTON (AP) — Donald Trump is crushing his Republican presidential rivals in the contest to raise campaign cash, putting the other White House hopefuls in an unenviable position before the first … [+6371 chars]",
-    },
-  ];
+  static defaultProps = {
+    pageSize: 3,
+    Country: "in",
+  };
+  static propTypes = {
+    Country: PropTypes.string,
+    pageSize: PropTypes.number,
+  };
   constructor() {
     super();
 
     this.state = {
       articles: [],
+      page: 1,
+      totalResults: 0,
+      nextBtn: false,
+
       loading: false,
     };
   }
   async componentDidMount() {
-    let url =
-      "https://newsapi.org/v2/top-headlines?country=in&apiKey=cbc372f3450d4d3fb4b4c35576b337a6";
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.Country}&apiKey=cbc372f3450d4d3fb4b4c35576b337a6&page=1&pageSize=${this.props.pageSize}`;
+
+    this.setState({ loading: true });
+    let data = await fetch(url);
+    console.log("hereeeeeee:" + data);
+    let parsedData = await data.json();
+
+    console.log(parsedData);
+    this.setState({
+      articles: parsedData.articles,
+      page: 1,
+      totalResults: parsedData.totalResults,
+      loading: false,
+    });
+  }
+
+  handleNextClick = async () => {
+    let url = `https://newsapi.org/v2/top-headlines?country=${
+      this.props.Country
+    }&apiKey=cbc372f3450d4d3fb4b4c35576b337a6&page=${
+      this.state.page + 1
+    }&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
+    let data = await fetch(url);
+
+    let parsedData = await data.json();
+    if (
+      this.state.page + 1 ===
+      Math.ceil(this.state.totalResults / this.props.pageSize)
+    ) {
+      this.setState({
+        articles: parsedData.articles,
+        page: this.state.page + 1,
+        nextBtn: true,
+        loading: false,
+      });
+      console.log(this.state.nextBtn);
+    } else {
+      this.setState({
+        articles: parsedData.articles,
+        page: this.state.page + 1,
+        nextBtn: false,
+        loading: false,
+      });
+      console.log("next :" + this.state.nextBtn);
+      console.log(`{nextBtn :${this.state.nextBtn}}`);
+    }
+  };
+  handlePrevClick = async () => {
+    console.log("previous");
+
+    let url = `https://newsapi.org/v2/top-headlines?country=${
+      this.props.Country
+    }&apiKey=cbc372f3450d4d3fb4b4c35576b337a6&page=${
+      this.state.page - 1
+    }&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
     let data = await fetch(url);
     let parsedData = await data.json();
-    this.setState({ articles: parsedData.articles });
-  }
-  render() {
-    console.log("render");
-    return (
-      <div>
-        <div className="container my-3">
-          <h3>Top Headlines</h3>
 
-          <div className="row">
-            {this.state.articles.map((element) => {
-              console.log(element);
+    this.setState({
+      articles: parsedData.articles,
+      page: this.state.page - 1,
+      nextBtn: false,
+      loading: false,
+    });
+  };
+  render() {
+    return (
+      <div className="container my-3">
+        <h3 className="text-center">Top Headlines</h3>
+        {this.state.loading && <Spinner />}
+
+        <div className="row">
+          {!this.state.loading &&
+            this.state.articles.map((element) => {
               return (
                 <div className="col-md-4" key={element.url}>
                   <NewsItem
@@ -89,7 +122,25 @@ export class News extends Component {
                 </div>
               );
             })}
-          </div>
+        </div>
+        <div className="container d-flex justify-content-between">
+          <button
+            disabled={this.state.page <= 1}
+            type="button"
+            className="btn btn-dark"
+            onClick={this.handlePrevClick}
+          >
+            &larr;Previous
+          </button>
+
+          <button
+            disabled={this.state.nextBtn}
+            type="button"
+            className="btn btn-dark"
+            onClick={this.handleNextClick}
+          >
+            Next &rarr;
+          </button>
         </div>
       </div>
     );
