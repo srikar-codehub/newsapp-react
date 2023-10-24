@@ -47,11 +47,19 @@ export class News extends Component {
     super();
 
     this.state = {
-      articles: this.articles,
+      articles: [],
       loading: false,
     };
   }
+  async componentDidMount() {
+    let url =
+      "https://newsapi.org/v2/top-headlines?country=in&apiKey=cbc372f3450d4d3fb4b4c35576b337a6";
+    let data = await fetch(url);
+    let parsedData = await data.json();
+    this.setState({ articles: parsedData.articles });
+  }
   render() {
+    console.log("render");
     return (
       <div>
         <div className="container my-3">
@@ -63,17 +71,19 @@ export class News extends Component {
               return (
                 <div className="col-md-4" key={element.url}>
                   <NewsItem
-                    title={element.title.slice(0, 45)}
+                    title={
+                      element.title ? element.title.slice(0, 45) : "No title"
+                    }
                     description={
-                      element.description == null
-                        ? "Go to news page for further details"
-                        : element.description.slice(0, 88)
+                      element.description
+                        ? element.description.slice(0, 88)
+                        : "Go to news app for further details"
                     }
                     newsUrl={element.url}
                     imageUrl={
-                      element.urlToImage == null
-                        ? "/no-image-available.jpg"
-                        : element.urlToImage
+                      element.urlToImage
+                        ? element.urlToImage
+                        : "/no-image-available.jpg"
                     }
                   />
                 </div>
