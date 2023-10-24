@@ -45,7 +45,7 @@ export class News extends Component {
   ];
   constructor() {
     super();
-    console.log("constructor");
+
     this.state = {
       articles: this.articles,
       loading: false,
@@ -56,20 +56,29 @@ export class News extends Component {
       <div>
         <div className="container my-3">
           <h3>Top Headlines</h3>
+
           <div className="row">
-            <div className="col-md-4">
-              <NewsItem
-                title="myTitle"
-                description="myDesc"
-                imageUrl="https://storage.googleapis.com/afs-prod/media/f4744a35ee6d43b9a418e1c6c91f2d5c/1920.jpeg"
-              />
-            </div>
-            <div className="col-md-4">
-              <NewsItem title="myTitle" description="myDesc" />
-            </div>
-            <div className="col-md-4">
-              <NewsItem title="myTitle" description="myDesc" />
-            </div>
+            {this.state.articles.map((element) => {
+              console.log(element);
+              return (
+                <div className="col-md-4" key={element.url}>
+                  <NewsItem
+                    title={element.title.slice(0, 45)}
+                    description={
+                      element.description == null
+                        ? "Go to news page for further details"
+                        : element.description.slice(0, 88)
+                    }
+                    newsUrl={element.url}
+                    imageUrl={
+                      element.urlToImage == null
+                        ? "/no-image-available.jpg"
+                        : element.urlToImage
+                    }
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
