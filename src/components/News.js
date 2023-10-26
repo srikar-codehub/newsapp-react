@@ -99,7 +99,6 @@ export class News extends Component {
       <div className="container my-3">
         <h3 className="text-center my-3">Top Headlines-{}</h3>
         {this.state.loading && <Spinner />}
-
         <div className="row">
           {!this.state.loading &&
             this.state.articles.map((element) => {
