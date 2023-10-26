@@ -28,7 +28,7 @@ export class NewsItem extends Component {
               Example heading{" "}
               <span
                 style={sourceStyle}
-                className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                className="position-absolute top-0  translate-middle badge rounded-pill bg-danger"
               >
                 {source}
                 <span className="visually-hidden">unread messages</span>
