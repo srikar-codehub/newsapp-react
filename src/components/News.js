@@ -22,7 +22,6 @@ export class News extends Component {
       page: 1,
       totalResults: 0,
       nextBtn: false,
-
       loading: false,
     };
   }
@@ -98,7 +97,7 @@ export class News extends Component {
   render() {
     return (
       <div className="container my-3">
-        <h3 className="text-center my-3">Top Headlines</h3>
+        <h3 className="text-center my-3">Top Headlines-{}</h3>
         {this.state.loading && <Spinner />}
 
         <div className="row">
@@ -120,6 +119,13 @@ export class News extends Component {
                       element.urlToImage
                         ? element.urlToImage
                         : "/no-image-available.jpg"
+                    }
+                    author={element.author ? element.author : "Unknown"}
+                    publishedAt={
+                      element.publishedAt ? element.publishedAt : "Unknown"
+                    }
+                    source={
+                      element.source.name ? element.source.name : "Unknown"
                     }
                   />
                 </div>
